@@ -13,3 +13,6 @@ description: { type: String, required: true }
 }); 
 const Trip = mongoose.model('trips', tripSchema); 
 module.exports = Trip; 
+
+// Export the model so controllers can require it directly
+module.exports = mongoose.model('trips', tripSchema);
