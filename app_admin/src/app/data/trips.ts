@@ -1,4 +1,4 @@
-[
+export const trips = [
   {
     "code": "GALR210214",
     "name": "Gale Reef",
