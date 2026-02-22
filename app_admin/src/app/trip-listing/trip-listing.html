@@ -1,6 +1,12 @@
-<div>
-    <button (click)="addTrip()" class="btn btn-info">Add Trip</button>
+<div class="mb-3">
+    <button 
+        *ngIf="isLoggedIn()" 
+        (click)="addTrip()" 
+        class="btn btn-info">
+        Add Trip
+    </button>
 </div>
+
 <div class="row"> 
     <div *ngFor="let trip of trips" class="col-md-4 mb-3">
         <app-trip-card [trip]="trip"></app-trip-card> 

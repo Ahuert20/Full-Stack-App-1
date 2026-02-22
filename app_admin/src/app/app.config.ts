@@ -1,13 +1,16 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+
 import { routes } from './app.routes';
+import { authInterceptProvider } from './utils/jwt-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // This replaces the need for a polyfills.ts file
-    provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
-    provideHttpClient()
+    
+    provideHttpClient(withInterceptorsFromDi()),
+    importProvidersFrom(HttpClientModule),
+    authInterceptProvider
   ]
 };

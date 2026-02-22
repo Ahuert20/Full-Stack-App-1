@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core'; 
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; 
 import { CommonModule } from '@angular/common'; 
 import { Trip } from '../models/trip'; 
 import { TripCard } from '../trip-card/trip-card'; 
 import { TripData } from '../services/trip-data'; 
-import { Router } from '@angular/router'
+import { Router } from '@angular/router';
+import { AuthenticationService } from '../services/authentication';
 
 @Component({ 
   selector: 'app-trip-listing', 
@@ -19,19 +20,25 @@ export class TripListing implements OnInit {
   message: string = '';
 
   constructor(
-    private TripData: TripData,
-    private router: Router
+    private tripData: TripData,
+    private router: Router,
+    private authenticationService: AuthenticationService,
+    // Inject ChangeDetectorRef to solve the "click to show" issue
+    private cd: ChangeDetectorRef
   ) { 
     console.log('trip-listing constructor'); 
   } 
+
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
+  }
 
   public addTrip(): void {
     this.router.navigate(['add-trip']);
   }
 
- 
   private getStuff(): void { 
-    this.TripData.getTrips() 
+    this.tripData.getTrips() 
       .subscribe({ 
         next: (value: any) => { 
           this.trips = value; 
@@ -39,8 +46,9 @@ export class TripListing implements OnInit {
             this.message = 'There are ' + value.length + ' trips available.'; 
           } else { 
             this.message = 'There were no trips retrieved from the database'; 
-          } 
-          console.log(this.message); 
+          }
+          // Force Angular to detect the new trip data and update the HTML
+          this.cd.detectChanges(); 
         }, 
         error: (error: any) => { 
           console.log('Error: ' + error); 
@@ -49,7 +57,6 @@ export class TripListing implements OnInit {
   } 
 
   ngOnInit(): void { 
-    console.log('ngOnInit'); 
     this.getStuff(); 
   } 
 }
