@@ -1,2 +1,2 @@
-# Full-Stack-App-1
-Building a MEAN stack 
+# Travlr Getaways Website Project
+Built using the MEAN stack 
