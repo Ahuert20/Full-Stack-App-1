@@ -1,6 +1,6 @@
 const passport = require('passport');
 const mongoose = require('mongoose');
-const User = mongoose.model('users');
+const User = mongoose.model('user');
 
 const register = async (req, res) => {
     if (!req.body.name || !req.body.email || !req.body.password) {

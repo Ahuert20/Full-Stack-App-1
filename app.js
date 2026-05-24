@@ -32,12 +32,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 
 // 3. Enable CORS
-app.use('/api', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization'); // Added Authorization
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    next();
-});
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // 4. Wire-up routes
 app.use('/', indexRouter);
