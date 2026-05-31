@@ -1,10 +1,3 @@
-/**
- * API Routes
- * Defines all API endpoints and applies validation middleware
- * 
- * @module routes/index
- */
-
 const express = require("express");
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -12,14 +5,10 @@ const jwt = require('jsonwebtoken');
 const tripsController = require("../controllers/trips");
 const authController = require("../controllers/authentication");
 const bookingsController = require("../controllers/bookings");
-const validation = require("../middleware/validation");
 
-/**
- * JWT Authentication Middleware
- * Verifies JWT token from Authorization header
- * Attaches decoded user data to req.auth
- */
+
 function authenticateJWT(req, res, next) {
+
     const authHeader = req.headers['authorization'];
 
     if (!authHeader) {
@@ -40,41 +29,40 @@ function authenticateJWT(req, res, next) {
             return res.sendStatus(403);
         }
 
-        req.auth = verified;
+        req.auth = verified; // attach decoded payload
         next();
     });
 }
 
-// Authentication routes
-router.post('/login', validation.validateLogin, authController.login);
-router.post('/register', validation.validateRegister, authController.register);
 
-// Search routes - placed before /trips to avoid route conflicts
-router.get('/search', validation.validateSearchQuery, tripsController.tripsSearch);
-router.get('/search/stats', tripsController.tripsSearchStats);
+router.post('/login', authController.login);
+router.post('/register', authController.register);
 
-// Trip routes
+
+
 router.route("/trips")
-    .get(validation.validateTripQuery, tripsController.tripsList)
-    .post(authenticateJWT, validation.validateTripCreate, tripsController.tripsAddTrip);
+    .get(tripsController.tripsList)
+    .post(authenticateJWT, tripsController.tripsAddTrip);
 
 router.route('/trips/:tripCode')
-    .get(validation.validateTripCode, tripsController.tripsFindByCode)
-    .put(authenticateJWT, validation.validateTripCode, validation.validateTripUpdate, tripsController.tripsUpdateTrip)
-    .delete(authenticateJWT, validation.validateTripCode, tripsController.tripsDeleteTrip);
+    .get(tripsController.tripsFindByCode)
+    .put(authenticateJWT, tripsController.tripsUpdateTrip)
+    .delete(authenticateJWT, tripsController.tripsDeleteTrip);
 
-// Booking routes
+
+// Book a trip (must be logged in)
 router.post(
     '/trips/:tripId/book',
     authenticateJWT,
-    validation.validateTripId,
     bookingsController.bookTrip
 );
 
+// Get logged-in user's booked trips (Itinerary)
 router.get(
     '/my-trips',
     authenticateJWT,
     bookingsController.getMyTrips
 );
+
 
 module.exports = router;

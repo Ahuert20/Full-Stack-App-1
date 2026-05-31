@@ -1,176 +1,135 @@
-/**
- * Trips Controller
- * Handles HTTP requests and responses for trip endpoints
- * Delegates business logic to tripService and searchService
- * 
- * @module controllers/trips
- */
+const mongoose = require('mongoose');
+const Trip = require('../models/travlr'); 
 
-const tripService = require('../services/tripService');
-const searchService = require('../utils/searchService');
-
-/**
- * GET: /api/trips - List all trips with optional filtering and pagination
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
+// GET: /api/trips - lists all the trips
 const tripsList = async (req, res) => {
-    try {
-        const options = {
-            location: req.query.location,
-            minPrice: req.query.minPrice,
-            maxPrice: req.query.maxPrice,
-            page: parseInt(req.query.page) || 1,
-            limit: parseInt(req.query.limit) || 20
-        };
+  try {
+    const { location, minPrice, maxPrice } = req.query;
 
-        const result = await searchService.getTripsWithPagination(options);
-        res.status(200).json(result);
+    let filter = {};
 
-    } catch (err) {
-        console.error('Error in tripsList:', err);
-        res.status(err.status || 500).json({
-            message: err.message || 'Internal server error'
-        });
+    // Filter by location (case insensitive)
+    if (location) {
+      filter.resort = { $regex: location, $options: 'i' };
     }
+
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      filter.perPerson = {};
+
+      if (minPrice) {
+        filter.perPerson.$gte = Number(minPrice);
+      }
+
+      if (maxPrice) {
+        filter.perPerson.$lte = Number(maxPrice);
+      }
+    }
+
+    const trips = await Trip.find(filter).exec();
+
+    res.status(200).json(trips);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 };
 
-/**
- * GET: /api/search - Autocomplete search using Trie
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
-const tripsSearch = async (req, res) => {
-    try {
-        const query = req.query.q || '';
-        const limit = parseInt(req.query.limit) || 10;
-
-        const result = await searchService.searchTrips(query, limit);
-        res.status(200).json(result);
-
-    } catch (err) {
-        console.error('Error in tripsSearch:', err);
-        res.status(err.status || 500).json({
-            message: err.message || 'Internal server error'
-        });
-    }
-};
-
-/**
- * GET: /api/search/stats - Get search performance stats
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
-const tripsSearchStats = async (req, res) => {
-    try {
-        const stats = searchService.getStats();
-        res.status(200).json(stats);
-    } catch (err) {
-        res.status(500).json({ message: 'Could not retrieve stats' });
-    }
-};
-
-/**
- * GET: /api/trips/:tripCode - Find a single trip by code
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
+// GET: /api/trips/:tripCode - find a single trip by code
 const tripsFindByCode = async (req, res) => {
     try {
-        const trip = await tripService.getTripByCode(req.params.tripCode);
-        res.status(200).json(trip);
+        const q = await Trip
+            .find({'code' : req.params.tripCode}) 
+            .exec();
 
+        if (!q || q.length === 0) { 
+            return res.status(404).json({ "message": "Trip not found with code " + req.params.tripCode });
+        } else { 
+            return res.status(200).json(q);
+        }
     } catch (err) {
-        console.error('Error in tripsFindByCode:', err);
-        res.status(err.status || 500).json({
-            message: err.message || 'Internal server error'
-        });
+        return res.status(500).json(err);
     }
 };
 
-/**
- * POST: /api/trips - Create a new trip
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
+// POST: /api/trips - Adds a new Trip
 const tripsAddTrip = async (req, res) => {
     try {
-        const newTrip = await tripService.createTrip(req.body);
-
-        // Update Trie and invalidate cache
-        searchService.updateTrieIndex('add', newTrip);
-        searchService.invalidateTripCache(newTrip);
-
-        res.status(201).json(newTrip);
-
-    } catch (err) {
-        console.error('Error in tripsAddTrip:', err);
-        res.status(err.status || 500).json({
-            message: err.message || 'Internal server error'
+        const newTrip = new Trip({
+            code: req.body.code,
+            name: req.body.name,
+            length: req.body.length,
+            start: req.body.start,
+            resort: req.body.resort,
+            perPerson: req.body.perPerson,
+            image: req.body.image,
+            description: req.body.description
         });
+
+        const q = await newTrip.save();
+
+        if (!q) {
+            return res.status(400).json({ "message": "Database failed to save the trip" });
+        } else {
+            return res.status(201).json(q);
+        }
+    } catch (err) {
+        return res.status(500).json(err);
     }
 };
 
-/**
- * PUT: /api/trips/:tripCode - Update an existing trip
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
+// PUT: /api/trips/:tripCode - Updates an existing Trip
 const tripsUpdateTrip = async (req, res) => {
     try {
-        // Get old trip data before update for Trie cleanup
-        const oldTrip = await tripService.getTripByCode(req.params.tripCode);
-        const updatedTrip = await tripService.updateTrip(
-            req.params.tripCode,
-            req.body
-        );
+        const q = await Trip.findOneAndUpdate(
+            { 'code': req.params.tripCode },
+            {
+                code: req.body.code,
+                name: req.body.name,
+                length: req.body.length,
+                start: req.body.start,
+                resort: req.body.resort,
+                perPerson: req.body.perPerson,
+                image: req.body.image,
+                description: req.body.description
+            },
+            { new: true } // Returns the updated document instead of the old one
+        ).exec();
 
-        // Update Trie index and invalidate stale cache
-        searchService.updateTrieIndex('update', updatedTrip, oldTrip);
-        searchService.invalidateTripCache(updatedTrip);
-
-        res.status(200).json(updatedTrip);
-
+        if (!q) {
+            return res.status(404).json({ "message": "Trip not found with code " + req.params.tripCode });
+        } else {
+            return res.status(200).json(q);
+        }
     } catch (err) {
-        console.error('Error in tripsUpdateTrip:', err);
-        res.status(err.status || 500).json({
-            message: err.message || 'Internal server error'
-        });
+        return res.status(500).json(err);
     }
+
 };
 
-/**
- * DELETE: /api/trips/:tripCode - Delete a trip
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
-const tripsDeleteTrip = async (req, res) => {
-    try {
-        const trip = await tripService.getTripByCode(req.params.tripCode);
-        await tripService.deleteTrip(req.params.tripCode);
+    const tripsDeleteTrip = async (req, res) => {
+  try {
+    const tripCode = req.params.tripCode;
 
-        // Remove from Trie and clear cache
-        searchService.updateTrieIndex('delete', trip);
-        searchService.invalidateTripCache(trip);
+    const trip = await Trip.findOneAndDelete({ code: tripCode }).exec();
 
-        res.status(200).json({
-            message: 'Trip deleted successfully'
-        });
-
-    } catch (err) {
-        console.error('Error in tripsDeleteTrip:', err);
-        res.status(err.status || 500).json({
-            message: err.message || 'Internal server error'
-        });
+    if (!trip) {
+      return res.status(404).json({ message: "Trip not found" });
     }
+
+    res.status(200).json({ message: "Trip deleted successfully" });
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
+// All functions exported at the end for clean scope
 module.exports = {
-    tripsList,
-    tripsSearch,
-    tripsSearchStats,
-    tripsFindByCode,
-    tripsAddTrip,
-    tripsUpdateTrip,
-    tripsDeleteTrip
+  tripsList,
+  tripsFindByCode,
+  tripsAddTrip,
+  tripsUpdateTrip,
+  tripsDeleteTrip   // ADD THIS
 };

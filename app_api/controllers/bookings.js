@@ -1,58 +1,48 @@
-/**
- * Bookings Controller
- * Handles HTTP requests and responses for booking endpoints
- * Delegates business logic to bookingService
- * 
- * @module controllers/bookings
- */
+const User = require('../models/user');
+const Trip = require('../models/travlr');
 
-const bookingService = require('../services/bookingService');
 
-/**
- * POST: /api/trips/:tripId/book - Book a trip for the authenticated user
- * @param {Object} req - Express request object (must contain req.auth._id from JWT)
- * @param {Object} res - Express response object
- */
+
 const bookTrip = async (req, res) => {
-    try {
-        const userId = req.auth._id;
-        const tripId = req.params.tripId;
+  try {
+    const userId = req.auth._id;
+    const tripId = req.params.tripId;
 
-        await bookingService.bookTrip(userId, tripId);
+    const user = await User.findById(userId).exec();
+    const trip = await Trip.findById(tripId).exec();
 
-        res.status(200).json({ 
-            message: 'Trip booked successfully' 
-        });
-
-    } catch (err) {
-        console.error('Error in bookTrip:', err);
-        res.status(err.status || 500).json({ 
-            message: err.message || 'Internal server error' 
-        });
+    if (!trip) {
+      return res.status(404).json({ message: "Trip not found" });
     }
+
+    user.bookings.push(trip._id);
+    await user.save();
+
+    res.status(200).json({ message: "Trip booked successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 };
 
-/**
- * GET: /api/my-trips - Get all booked trips for the authenticated user
- * @param {Object} req - Express request object (must contain req.auth._id from JWT)
- * @param {Object} res - Express response object
- */
+
 const getMyTrips = async (req, res) => {
-    try {
-        const userId = req.auth._id;
-        const bookings = await bookingService.getUserBookings(userId);
+  try {
+    const user = await User.findById(req.auth._id)
+      .populate('bookings')
+      .exec();
 
-        res.status(200).json(bookings);
+    res.status(200).json(user.bookings);
 
-    } catch (err) {
-        console.error('Error in getMyTrips:', err);
-        res.status(err.status || 500).json({ 
-            message: err.message || 'Internal server error' 
-        });
-    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 };
+
 
 module.exports = {
-    bookTrip,
-    getMyTrips
+  bookTrip,
+  getMyTrips
 };
