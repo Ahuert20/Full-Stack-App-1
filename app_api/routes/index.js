@@ -1,58 +1,80 @@
+/**
+ * API Routes
+ * Defines all API endpoints and applies validation middleware
+ * 
+ * @module routes/index
+ */
+
 const express = require("express");
 const router = express.Router();
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 
 const tripsController = require("../controllers/trips");
 const authController = require("../controllers/authentication");
+const bookingsController = require("../controllers/bookings");
+const validation = require("../middleware/validation");
 
-
+/**
+ * JWT Authentication Middleware
+ * Verifies JWT token from Authorization header
+ * Attaches decoded user data to req.auth
+ */
 function authenticateJWT(req, res, next) {
-
-
     const authHeader = req.headers['authorization'];
-  
 
-    if (authHeader == null) {
-        console.log('Auth Header Required but NOT PRESENT!');
-        return res.sendStatus(401); 
-    }
-
-    let headers = authHeader.split(' ');
-    if (headers.length < 1) {
-        console.log('Not enough tokens in Auth Header: ' + headers.length);
-        return res.sendStatus(501); 
+    if (!authHeader) {
+        console.log('Authorization header missing');
+        return res.sendStatus(401);
     }
 
     const token = authHeader.split(' ')[1];
- 
 
-    if (token == null) {
-        console.log('Null Bearer Token');
-        return res.sendStatus(401); // 
+    if (!token) {
+        console.log('Bearer token missing');
+        return res.sendStatus(401);
     }
-
 
     jwt.verify(token, process.env.JWT_SECRET, (err, verified) => {
         if (err) {
-            console.log('Token Validation Error!');
-            return res.sendStatus(401); // 
+            console.log('Token validation error');
+            return res.sendStatus(403);
         }
-        req.auth = verified; 
-        next(); 
+
+        req.auth = verified;
+        next();
     });
 }
 
+// Authentication routes
+router.post('/login', validation.validateLogin, authController.login);
+router.post('/register', validation.validateRegister, authController.register);
 
-router.post('/login', authController.login);
-router.post('/register', authController.register);
+// Search routes - placed before /trips to avoid route conflicts
+router.get('/search', validation.validateSearchQuery, tripsController.tripsSearch);
+router.get('/search/stats', tripsController.tripsSearchStats);
 
-
+// Trip routes
 router.route("/trips")
-    .get(tripsController.tripsList)
-    .post(authenticateJWT, tripsController.tripsAddTrip); 
+    .get(validation.validateTripQuery, tripsController.tripsList)
+    .post(authenticateJWT, validation.validateTripCreate, tripsController.tripsAddTrip);
 
 router.route('/trips/:tripCode')
-    .get(tripsController.tripsFindByCode)
-    .put(authenticateJWT, tripsController.tripsUpdateTrip); 
+    .get(validation.validateTripCode, tripsController.tripsFindByCode)
+    .put(authenticateJWT, validation.validateTripCode, validation.validateTripUpdate, tripsController.tripsUpdateTrip)
+    .delete(authenticateJWT, validation.validateTripCode, tripsController.tripsDeleteTrip);
+
+// Booking routes
+router.post(
+    '/trips/:tripId/book',
+    authenticateJWT,
+    validation.validateTripId,
+    bookingsController.bookTrip
+);
+
+router.get(
+    '/my-trips',
+    authenticateJWT,
+    bookingsController.getMyTrips
+);
 
 module.exports = router;

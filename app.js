@@ -1,64 +1,100 @@
+/**
+ * Travlr Getaways Main Application
+ * Express server configuration with enhanced security, validation,
+ * and search service initialization added in Module 4
+ * 
+ * @module app
+ */
+
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan'); 
+const logger = require('morgan');
 const handlebars = require('hbs');
-const passport = require('passport'); // Import passport
+const passport = require('passport');
+const mongoSanitize = require('express-mongo-sanitize');
 
-// 1. Bring in the database and passport config
+// Database and passport configuration
 require('./app_api/models/db');
 require('./app_api/config/passport');
 
+// Route imports
 const indexRouter = require('./app_server/routes/index');
 const usersRouter = require('./app_server/routes/users');
 const travelRouter = require('./app_server/routes/travel');
 const apiRouter = require('./app_api/routes/index');
 
-const app = express(); // Initialize app BEFORE using it
+const app = express();
 
-// view engine setup
+// View engine setup
 app.set('views', path.join(__dirname, 'app_server', 'views'));
 app.set('view engine', 'hbs');
 handlebars.registerPartials(__dirname + '/app_server/views/partials');
 
+// Middleware stack
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 2. Initialize Passport
+// Security middleware - Sanitize data to prevent NoSQL injection
+app.use(mongoSanitize({
+    replaceWith: '_',
+    onSanitize: ({ req, key }) => {
+        console.warn(`Sanitized potentially malicious data in ${key}`);
+    }
+}));
+
+// Initialize Passport for JWT authentication
 app.use(passport.initialize());
 
-// 3. Enable CORS
-app.use('/api', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization'); // Added Authorization
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    next();
-});
+// Enable CORS for Angular admin panel
+const cors = require('cors');
+app.use(cors({
+    origin: 'http://localhost:4200',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-// 4. Wire-up routes
+// Wire up routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/travel', travelRouter);
 app.use('/api', apiRouter);
 
-// 5. Catch unauthorized errors (JWT failures)
+// Initialize search service after DB connection is ready
+// Small delay to make sure mongoose has connected before we query
+const searchService = require('./app_api/utils/searchService');
+setTimeout(async () => {
+    try {
+        await searchService.initialize();
+    } catch (err) {
+        console.error('Search service initialization failed:', err);
+    }
+}, 2000);
+
+// Error handling middleware
+
+// Catch unauthorized errors (JWT failures)
 app.use((err, req, res, next) => {
     if (err.name === 'UnauthorizedError') {
-        res.status(401).json({"message": err.name + ": " + err.message});
+        res.status(401).json({
+            "message": err.name + ": " + err.message
+        });
+    } else {
+        next(err);
     }
 });
 
-// 6. catch 404
+// Catch 404 and forward to error handler
 app.use(function(req, res, next) {
     const createError = require('http-errors');
     next(createError(404));
 });
 
-// error handler
+// Generic error handler
 app.use(function(err, req, res, next) {
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};

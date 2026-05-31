@@ -1,14 +1,63 @@
-<div class="mb-3">
-    <button 
-        *ngIf="isLoggedIn()" 
-        (click)="addTrip()" 
-        class="btn btn-info">
-        Add Trip
-    </button>
+<!-- SEARCH SECTION -->
+<div class="card p-3 mb-4">
+
+  <h5>Search Trips</h5>
+
+  <div class="row">
+
+    <div class="col-md-4">
+      <input
+        type="text"
+        [(ngModel)]="location"
+        class="form-control"
+        placeholder="Location">
+    </div>
+
+    <div class="col-md-3">
+      <input
+        type="number"
+        [(ngModel)]="minPrice"
+        class="form-control"
+        placeholder="Min Price">
+    </div>
+
+    <div class="col-md-3">
+      <input
+        type="number"
+        [(ngModel)]="maxPrice"
+        class="form-control"
+        placeholder="Max Price">
+    </div>
+
+    <div class="col-md-2">
+      <button (click)="search()" class="btn btn-primary w-100">
+        Search
+      </button>
+    </div>
+
+  </div>
+
+  <button (click)="clearSearch()" class="btn btn-secondary mt-2">
+    Clear
+  </button>
+
 </div>
 
-<div class="row"> 
-    <div *ngFor="let trip of trips" class="col-md-4 mb-3">
-        <app-trip-card [trip]="trip"></app-trip-card> 
-    </div> 
+
+<!-- ADD TRIP BUTTON -->
+<div class="mb-3">
+  <button
+    *ngIf="isLoggedIn()"
+    (click)="addTrip()"
+    class="btn btn-info">
+    Add Trip
+  </button>
+</div>
+
+
+<!-- TRIPS DISPLAY -->
+<div class="row">
+  <div *ngFor="let trip of trips" class="col-md-4 mb-3">
+    <app-trip-card [trip]="trip"></app-trip-card>
+  </div>
 </div>

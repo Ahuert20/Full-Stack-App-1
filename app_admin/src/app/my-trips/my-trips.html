@@ -1,0 +1,12 @@
+<h2>My Trips</h2>
+
+<div *ngIf="trips.length === 0">
+  <p>You have no booked trips yet.</p>
+</div>
+
+<div *ngFor="let trip of trips">
+  <h3>{{ trip.name }}</h3>
+  <p>Location: {{ trip.location }}</p>
+  <p>Price: ${{ trip.price }}</p>
+  <hr />
+</div>

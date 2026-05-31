@@ -19,7 +19,66 @@ export class TripData {
 
   private baseUrl = 'http://localhost:3000/api';
 
-  // --- Trip Management Methods ---
+  // Book a trip
+  bookTrip(tripId: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.storage.getItem('travlr-token')}`
+      })
+    };
+
+    return this.http.post(
+      `${this.baseUrl}/trips/${tripId}/book`,
+      {},
+      httpOptions
+    );
+  }
+
+  // Delete trip (Admin)
+  deleteTrip(tripCode: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.storage.getItem('travlr-token')}`
+      })
+    };
+
+    return this.http.delete(
+      `${this.baseUrl}/trips/${tripCode}`,
+      httpOptions
+    );
+  }
+
+  // Get logged-in user's trips (Itinerary)
+  getMyTrips(): Observable<Trip[]> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.storage.getItem('travlr-token')}`
+      })
+    };
+
+    return this.http.get<Trip[]>(
+      `${this.baseUrl}/my-trips`,
+      httpOptions
+    );
+  }
+
+  // Search trips
+  searchTrips(location?: string, minPrice?: number, maxPrice?: number): Observable<Trip[]> {
+
+    let queryParams: string[] = [];
+
+    if (location) queryParams.push(`location=${location}`);
+    if (minPrice !== undefined) queryParams.push(`minPrice=${minPrice}`);
+    if (maxPrice !== undefined) queryParams.push(`maxPrice=${maxPrice}`);
+
+    const queryString = queryParams.length > 0
+      ? '?' + queryParams.join('&')
+      : '';
+
+    return this.http.get<Trip[]>(
+      `${this.baseUrl}/trips${queryString}`
+    );
+  }
 
   getTrips(): Observable<Trip[]> {
     return this.http.get<Trip[]>(`${this.baseUrl}/trips`);
@@ -31,11 +90,18 @@ export class TripData {
         'Authorization': `Bearer ${this.storage.getItem('travlr-token')}`
       })
     };
-    return this.http.post<Trip>(`${this.baseUrl}/trips`, formData, httpOptions);
+
+    return this.http.post<Trip>(
+      `${this.baseUrl}/trips`,
+      formData,
+      httpOptions
+    );
   }
 
   getTrip(tripCode: string): Observable<Trip[]> {
-    return this.http.get<Trip[]>(`${this.baseUrl}/trips/${tripCode}`);
+    return this.http.get<Trip[]>(
+      `${this.baseUrl}/trips/${tripCode}`
+    );
   }
 
   updateTrip(formData: Trip): Observable<Trip> {
@@ -44,22 +110,22 @@ export class TripData {
         'Authorization': `Bearer ${this.storage.getItem('travlr-token')}`
       })
     };
-    return this.http.put<Trip>(`${this.baseUrl}/trips/${formData.code}`, formData, httpOptions);
+
+    return this.http.put<Trip>(
+      `${this.baseUrl}/trips/${formData.code}`,
+      formData,
+      httpOptions
+    );
   }
 
-  // --- Authentication Methods ---
-
-  // Call to our /login endpoint, returns JWT 
   public login(user: User, passwd: string): Observable<AuthResponse> {
     return this.handleAuthAPICall('login', user, passwd);
   }
 
-  // Call to our /register endpoint, creates user and returns JWT 
   public register(user: User, passwd: string): Observable<AuthResponse> {
     return this.handleAuthAPICall('register', user, passwd);
   }
 
-  // Helper method to process both login and register methods 
   private handleAuthAPICall(endpoint: string, user: User, passwd: string): Observable<AuthResponse> {
     const formData = {
       name: user.name,
@@ -67,7 +133,10 @@ export class TripData {
       password: passwd
     };
 
-    return this.http.post<AuthResponse>(`${this.baseUrl}/${endpoint}`, formData);
+    return this.http.post<AuthResponse>(
+      `${this.baseUrl}/${endpoint}`,
+      formData
+    );
   }
 }
 
