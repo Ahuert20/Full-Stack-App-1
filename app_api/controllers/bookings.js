@@ -1,48 +1,84 @@
-const User = require('../models/user');
-const Trip = require('../models/travlr');
+/**
+ * Bookings Controller - Enhanced for Module 5
+ * Handles HTTP requests for booking endpoints
+ * Delegates all business logic to bookingService
+ * 
+ * @module controllers/bookings
+ */
 
+const bookingService = require('../services/bookingService');
 
-
+/**
+ * POST: /api/trips/:tripId/book - Book a trip
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const bookTrip = async (req, res) => {
-  try {
-    const userId = req.auth._id;
-    const tripId = req.params.tripId;
+    try {
+        const userId = req.auth._id;
+        const tripId = req.params.tripId;
+        const guests = parseInt(req.body.guests) || 1;
 
-    const user = await User.findById(userId).exec();
-    const trip = await Trip.findById(tripId).exec();
+        const booking = await bookingService.bookTrip(userId, tripId, guests);
 
-    if (!trip) {
-      return res.status(404).json({ message: "Trip not found" });
+        res.status(201).json({
+            message: 'Trip booked successfully',
+            booking
+        });
+
+    } catch (err) {
+        console.error('Error in bookTrip:', err);
+        res.status(err.status || 500).json({
+            message: err.message || 'Internal server error'
+        });
     }
-
-    user.bookings.push(trip._id);
-    await user.save();
-
-    res.status(200).json({ message: "Trip booked successfully" });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json(err);
-  }
 };
 
-
+/**
+ * GET: /api/my-trips - Get all bookings for the logged in user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const getMyTrips = async (req, res) => {
-  try {
-    const user = await User.findById(req.auth._id)
-      .populate('bookings')
-      .exec();
+    try {
+        const bookings = await bookingService.getUserBookings(req.auth._id);
+        res.status(200).json(bookings);
 
-    res.status(200).json(user.bookings);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json(err);
-  }
+    } catch (err) {
+        console.error('Error in getMyTrips:', err);
+        res.status(err.status || 500).json({
+            message: err.message || 'Internal server error'
+        });
+    }
 };
 
+/**
+ * PUT: /api/bookings/:bookingId/cancel - Cancel a booking
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const cancelBooking = async (req, res) => {
+    try {
+        const booking = await bookingService.cancelBooking(
+            req.params.bookingId,
+            req.auth._id
+        );
+
+        res.status(200).json({
+            message: 'Booking cancelled successfully',
+            booking
+        });
+
+    } catch (err) {
+        console.error('Error in cancelBooking:', err);
+        res.status(err.status || 500).json({
+            message: err.message || 'Internal server error'
+        });
+    }
+};
 
 module.exports = {
-  bookTrip,
-  getMyTrips
+    bookTrip,
+    getMyTrips,
+    cancelBooking
 };
