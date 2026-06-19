@@ -1,133 +1,423 @@
 <!DOCTYPE html>
-<!-- Website template by freewebsitetemplates.com -->
-<html>
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Travlr Getaways Website Template</title>
-	<link rel="stylesheet" href="css/style.css" type="text/css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Austin Huertas — CS 499 ePortfolio</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --bg-raised:#11161d;
+    --border:#1f2630;
+    --text:#e6e9ee;
+    --text-dim:#8b95a3;
+    --text-faint:#5b6472;
+    --accent:#5fb3a3;
+    --accent-dim:#3a6b62;
+    --mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    font-size:16px;
+  }
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+
+  /* ---- Top nav ---- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(13,17,23,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:56px; max-width:1040px;}
+  nav .brand{font-family:var(--mono); font-size:13px; color:var(--text-dim); letter-spacing:0.5px;}
+  nav .links{display:flex; gap:24px; font-size:13px;}
+  nav .links a{color:var(--text-dim); text-decoration:none; transition:color .15s;}
+  nav .links a:hover{color:var(--accent);}
+
+  /* ---- Hero ---- */
+  header.hero{padding:96px 0 72px; max-width:1040px; margin:0 auto;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; color:var(--accent);
+    letter-spacing:1.5px; text-transform:uppercase; margin-bottom:18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block;}
+  h1{
+    font-size:clamp(32px, 5vw, 46px);
+    font-weight:600; letter-spacing:-0.5px; line-height:1.15;
+    margin-bottom:16px; color:#fff;
+  }
+  .hero-sub{font-size:18px; color:var(--text-dim); max-width:560px; margin-bottom:32px;}
+  .hero-links{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono); font-size:13px;
+    padding:10px 18px; border-radius:6px;
+    text-decoration:none; transition:all .15s;
+    border:1px solid var(--border);
+  }
+  .btn-primary{background:var(--accent); color:#06120f; border-color:var(--accent); font-weight:600;}
+  .btn-primary:hover{background:#74c4b5;}
+  .btn-ghost{color:var(--text-dim); background:transparent;}
+  .btn-ghost:hover{color:var(--text); border-color:var(--text-dim);}
+
+  /* ---- Version timeline (signature element) ---- */
+  .timeline-section{max-width:1040px; margin:0 auto; padding:0 0 80px;}
+  .timeline-label{font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-bottom:20px; letter-spacing:0.5px;}
+  .timeline{
+    display:flex; align-items:stretch; gap:0;
+    border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:var(--bg-raised);
+  }
+  .tl-node{
+    flex:1; padding:20px 18px; position:relative;
+    border-right:1px solid var(--border);
+  }
+  .tl-node:last-child{border-right:none;}
+  .tl-tag{
+    font-family:var(--mono); font-size:13px; color:var(--accent); font-weight:600;
+    display:block; margin-bottom:6px;
+  }
+  .tl-cat{font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--text-faint); margin-bottom:8px;}
+  .tl-desc{font-size:13px; color:var(--text-dim); line-height:1.5;}
+  .tl-node::after{
+    content:"→"; position:absolute; right:-11px; top:50%; transform:translateY(-50%);
+    color:var(--text-faint); font-size:14px; z-index:2; background:var(--bg-raised);
+    width:20px; text-align:center;
+  }
+  .tl-node:last-child::after{content:"";}
+
+  /* ---- Section shell ---- */
+  section{padding:64px 0; border-top:1px solid var(--border);}
+  section.wrap-section .wrap{max-width:1040px;}
+  .section-head{margin-bottom:36px;}
+  .section-num{font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; letter-spacing:1px;}
+  h2{font-size:28px; font-weight:600; color:#fff; letter-spacing:-0.3px;}
+  .section-intro{color:var(--text-dim); font-size:15px; max-width:680px; margin-top:10px;}
+
+  /* ---- Self assessment ---- */
+  .assessment{max-width:1040px; margin:0 auto;}
+  .assessment p{color:var(--text-dim); margin-bottom:18px; font-size:15.5px; max-width:740px;}
+  .assessment p strong{color:var(--text); font-weight:600;}
+  .assessment-toggle{
+    font-family:var(--mono); font-size:12px; color:var(--accent);
+    background:none; border:1px solid var(--accent-dim); border-radius:6px;
+    padding:8px 14px; cursor:pointer; margin-top:8px;
+  }
+  .assessment-toggle:hover{background:rgba(95,179,163,0.1);}
+  .assessment-full{display:none; margin-top:24px;}
+  .assessment-full.open{display:block;}
+
+  /* ---- Video ---- */
+  .video-card{
+    max-width:1040px; margin:0 auto;
+    background:var(--bg-raised); border:1px solid var(--border); border-radius:10px;
+    padding:28px; display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  }
+  .video-icon{
+    width:52px; height:52px; border-radius:8px; background:var(--accent-dim);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .video-icon svg{width:22px; height:22px; fill:var(--accent);}
+  .video-meta{flex:1; min-width:200px;}
+  .video-meta h3{font-size:16px; color:var(--text); margin-bottom:4px; font-weight:600;}
+  .video-meta p{font-size:13px; color:var(--text-faint);}
+
+  /* ---- Artifact cards ---- */
+  .artifact{
+    max-width:1040px; margin:0 auto 0;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--bg-raised);
+  }
+  .artifact + .artifact{margin-top:28px;}
+  .artifact-head{
+    padding:24px 28px; border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;
+  }
+  .artifact-cat{font-family:var(--mono); font-size:11px; color:var(--accent); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;}
+  .artifact-head h3{font-size:20px; color:#fff; font-weight:600;}
+  .version-pill{
+    font-family:var(--mono); font-size:12px; color:var(--text-dim);
+    border:1px solid var(--border); border-radius:20px; padding:4px 12px;
+    white-space:nowrap;
+  }
+  .artifact-body{padding:24px 28px;}
+  .artifact-body p{color:var(--text-dim); font-size:14.5px; margin-bottom:16px;}
+  .artifact-list{margin:0 0 20px 0; padding-left:0; list-style:none;}
+  .artifact-list li{
+    font-size:14px; color:var(--text-dim); padding-left:18px; position:relative; margin-bottom:8px;
+  }
+  .artifact-list li::before{content:"·"; position:absolute; left:4px; color:var(--accent);}
+  .artifact-links{display:flex; gap:10px; flex-wrap:wrap;}
+  .link-chip{
+    font-family:var(--mono); font-size:12.5px; color:var(--text-dim);
+    border:1px solid var(--border); border-radius:6px; padding:8px 14px;
+    text-decoration:none; transition:all .15s; display:inline-flex; align-items:center; gap:6px;
+  }
+  .link-chip:hover{border-color:var(--accent); color:var(--accent);}
+  .link-chip.featured{border-color:var(--accent-dim); color:var(--accent);}
+  .outcomes-row{display:flex; gap:8px; margin-top:18px; flex-wrap:wrap;}
+  .outcome-tag{
+    font-family:var(--mono); font-size:11px; color:var(--text-faint);
+    border:1px solid var(--border); border-radius:4px; padding:3px 8px;
+  }
+
+  /* ---- Repo footer ---- */
+  footer{padding:48px 0 64px; text-align:center;}
+  footer .wrap{max-width:1040px;}
+  footer p{color:var(--text-faint); font-size:13px; margin-bottom:10px;}
+  footer a{color:var(--text-dim); text-decoration:none;}
+  footer a:hover{color:var(--accent);}
+
+  @media (max-width:680px){
+    .timeline{flex-direction:column;}
+    .tl-node{border-right:none; border-bottom:1px solid var(--border);}
+    .tl-node::after{content:"↓"; right:auto; left:18px; top:auto; bottom:-11px; transform:none;}
+    .tl-node:last-child{border-bottom:none;}
+    header.hero{padding:64px 0 48px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
 </head>
 <body>
-	<div id="background">
-		<div id="page">
-			<div id="header">
-				<div id="logo">
-					<a href="index.html"><img src="images/logo.png" alt="LOGO" height="100" width="200"></a>
-				</div>
-				<div id="navigation">
-					<ul>
-						<li class="selected">
-							<a href="index.html">Home</a>
-						</li>
-						<li>
-							<a href="travel.html">Travel</a>
-						</li>
-						<li>
-							<a href="rooms.html">Rooms</a>
-						</li>
-						<li>
-							<a href="meals.html">Meals</a>
-						</li>
-						<li>
-							<a href="news.html">News</a>
-						</li>
-						<li>
-							<a href="about.html">About</a>
-						</li>
-						<li>
-							<a href="contact.html">Contact</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div id="contents">
-				<div id="adbox">
-					<img src="images/sea-sound.jpg" alt="Img">
-					<h1>Enjoy the Summer with Us!</h1>
-					<p>
-						This website template has been designed by <a href="http://www.freewebsitetemplates.com/">Free Website Templates</a> for you, for free. You can replace all this text with your own text. You can remove any link to our website from this website template, you're free to use this website template without linking back to us. If you're having problems editing this website template, then don't hesitate to ask for help on the <a href="http://www.freewebsitetemplates.com/forums/">Forum</a>.
-					</p>
-				</div>
-				<div id="main">
-					<div class="box">
-						<div>
-							<div>
-								<h3>Latest Blog</h3>
-								<ul>
-									<li>
-										<h4><a href="news.html">2023 Best Beaches Contest Winners</a></h4>
-										<span>April 02, 2023</span>
-										<p>
-											Integer magna leo, posuere et dignissim vitae, porttitor at odio. Pellentesque a metus nec magna placerat volutpat. Nunc nisi mi, elementum sit amet...
-										</p>
-									</li>
-									<li>
-										<h4><a href="news.html">Top 10 Diving Spots</a></h4>
-										<span>May 29, 2023</span>
-										<p>
-											Maecenas scelerisque odio quis arcu fringilla malesuada. Nulla facilisi. In libero nulla, fermentum ut pretium ac, pharetra et eros...
-										</p>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div id="testimonials" class="box">
-						<div>
-							<div>
-								<h3>Testimonials</h3>
-								<p>
-									“In hac habitasse platea dictumst. Integer purus justo, egestas eu consectetur eu, cursus in tortor. Quisque nec nunc ac mi ultrices iaculis. Aenean quis elit mauris, nec vestibulum lorem.” <span>- <a href="index.html">Juan De La Cruz</a></span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div id="sidebar">
-					<div class="section">
-						<a href="rooms.html"><img src="images/rooms.png" alt="Img"></a>
-					</div>
-					<div class="section">
-						<a href="dives.html"><img src="images/dive-site.png" alt="Img"></a>
-					</div>
-					<div class="section">
-						<a href="foods.html"><img src="images/food.png" alt="Img"></a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div id="footer">
-			<div>
-				<ul class="navigation">
-					<li class="active">
-						<a href="index.html">Home</a>
-					</li>
-					<li>
-						<a href="travel.html">Travel</a>
-					</li>
-					<li>
-						<a href="rooms.html">Rooms</a>
-					</li>
-					<li>
-						<a href="meals.html">Meals</a>
-					</li>
-					<li>
-						<a href="news.html">News</a>
-					</li>
-					<li>
-						<a href="about.html">About</a>
-					</li>
-					<li>
-						<a href="contact.html">Contact</a>
-					</li>
-				</ul>
-				<div id="connect">
-					<a href="http://pinterest.com/fwtemplates/" target="_blank" class="pinterest"></a> <a href="http://freewebsitetemplates.com/go/facebook/" target="_blank" class="facebook"></a> <a href="http://freewebsitetemplates.com/go/twitter/" target="_blank" class="twitter"></a> <a href="http://freewebsitetemplates.com/go/googleplus/" target="_blank" class="googleplus"></a>
-				</div>
-			</div>
-			<p>
-				© 2023 by Travlr Getaways. All Rights Reserved
-			</p>
-		</div>
-	</div>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">austin-huertas / cs499</span>
+    <div class="links">
+      <a href="#assessment">Self-Assessment</a>
+      <a href="#review">Code Review</a>
+      <a href="#design">Design</a>
+      <a href="#algorithms">Algorithms</a>
+      <a href="#databases">Databases</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap" style="max-width:1040px;">
+    <div class="eyebrow">CS 499 Computer Science Capstone</div>
+    <h1>Austin Huertas</h1>
+    <p class="hero-sub">A backend-focused ePortfolio built around one application, rebuilt three times — through software design, algorithms, and database engineering.</p>
+    <div class="hero-links">
+      <a href="https://github.com/Ahuert20/Full-Stack-App-1" class="btn btn-primary">View Repository ↗</a>
+      <a href="#assessment" class="btn btn-ghost">Read Self-Assessment</a>
+      <a href="#review" class="btn btn-ghost">Watch Code Review</a>
+    </div>
+  </div>
+</header>
+
+<div class="timeline-section">
+  <div class="wrap" style="max-width:1040px;">
+    <div class="timeline-label">// one artifact, three enhancements — travlr getaways</div>
+    <div class="timeline">
+      <div class="tl-node">
+        <span class="tl-tag">v3.0</span>
+        <span class="tl-cat">Original</span>
+        <p class="tl-desc">Functional MEAN app from CS 465. Routes, controllers, and queries mixed together with no validation layer.</p>
+      </div>
+      <div class="tl-node">
+        <span class="tl-tag">v3.1</span>
+        <span class="tl-cat">Software Design</span>
+        <p class="tl-desc">Layered architecture — routes, controllers, services, validation separated and security-hardened.</p>
+      </div>
+      <div class="tl-node">
+        <span class="tl-tag">v4.0</span>
+        <span class="tl-cat">Algorithms</span>
+        <p class="tl-desc">Trie-based autocomplete and an LRU cache replace linear search, dropped cleanly into the service layer.</p>
+      </div>
+      <div class="tl-node">
+        <span class="tl-tag">v5.0</span>
+        <span class="tl-cat">Databases</span>
+        <p class="tl-desc">Validated schemas, real relationships, and aggregation pipelines replace loosely typed collections.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="assessment" class="wrap-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">00</div>
+      <h2>Professional Self-Assessment</h2>
+      <p class="section-intro">How the program — and a prior career in financial services — shaped the way I build and explain software.</p>
+    </div>
+
+    <div class="assessment">
+      <p>Before starting the Computer Science program at SNHU, I worked in financial services, mainly in banking and 401(k) administration. That background shaped a skill I rely on constantly as a developer: translating technical information into something a non-technical person can act on. I regularly explained financial products to clients with no finance background and turned vague requests into concrete next steps. That same instinct now shows up in how I write documentation, design API responses, and explain security decisions — making something technical understandable for whoever is on the other end.</p>
+
+      <p>My coursework was built around code reviews, peer feedback, and discussion-based learning rather than assigned team roles. That model still demanded the core skill of collaborative development: writing code clearly enough that someone else — a peer, an instructor, or a future employer — can follow my reasoning without me explaining it in person. My capstone reflects this directly: every enhancement below includes documentation, README context, and a narrative justifying <em>why</em> I made each choice, not just what changed.</p>
+
+      <button class="assessment-toggle" onclick="document.getElementById('assessment-rest').classList.toggle('open'); this.textContent = this.textContent.includes('Read') ? 'Show less ↑' : 'Read full self-assessment ↓';">Read full self-assessment ↓</button>
+
+      <div class="assessment-full" id="assessment-rest">
+        <p>My strongest <strong>data structures and algorithms</strong> work comes from enhancing Travlr Getaways, a travel booking app I originally built in CS 465. The original search relied on a linear scan through every trip for every query. For my enhancement, I built a Trie from scratch for prefix-based autocomplete, paired with an LRU cache using a hash map and doubly linked list to avoid repeated database hits. Building both without a library forced me to actually understand the trade-offs — memory versus speed, cache size versus hit rate — instead of just knowing the vocabulary.</p>
+
+        <p>My approach to <strong>software engineering and databases</strong> is best shown by how Travlr evolved across all three capstone enhancements, since each one built on the last. The software design enhancement restructured the app into proper layers — routes, controllers, services, validation — instead of mixing business logic with request handling. That restructuring is what made the algorithms enhancement possible without rewriting the app, since the new search logic dropped cleanly into the service layer. The database enhancement went further, replacing loosely typed schemas with validated Mongoose models, adding real relationships through Booking and Review collections, and using aggregation pipelines to calculate ratings instead of pulling every review into application code.</p>
+
+        <p><strong>Security</strong> ran through all three enhancements rather than existing as a separate step. The original Travlr code passed user input straight into database queries — a textbook NoSQL injection risk. I addressed it with layered defenses: input validation and sanitization at the middleware level, schema-level validation as backup, and parameterized queries throughout. Coming from financial services, where a data error has real consequences, assuming input is hostile until proven otherwise was already familiar — CS 499 gave me the tools to actually implement it.</p>
+
+        <p>Together, these three artifacts tell one continuous story. Travlr started as functional but architecturally weak, and across software design, algorithms, and database work, it became something closer to what I'd actually ship. I'm presenting the original and enhanced versions side by side because the contrast is the point — this portfolio shows I can look at existing code critically and fix what's actually wrong with it. That's the core of backend development: not just building from scratch, but improving systems that already exist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="review" class="wrap-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <h2>Code Review</h2>
+      <p class="section-intro">Initial walkthrough of Travlr Getaways before any enhancements — existing functionality, code analysis, and the enhancement plan across all three categories.</p>
+    </div>
+
+    <div class="video-card">
+      <div class="video-icon">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div class="video-meta">
+        <h3>Travlr Getaways — Code Review</h3>
+        <p>~25 min · screencast walkthrough</p>
+      </div>
+      <a href="https://vimeo.com/1202947117?share=copy&fl=sv&fe=ci" class="btn btn-primary" target="_blank" rel="noopener">Watch on Vimeo ↗</a>
+    </div>
+  </div>
+</section>
+
+<section id="design" class="wrap-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <h2>Software Design &amp; Engineering</h2>
+      <p class="section-intro">Restructuring a flat Express app into a layered architecture with validation and security built in.</p>
+    </div>
+
+    <div class="artifact">
+      <div class="artifact-head">
+        <div>
+          <div class="artifact-cat">Enhancement One</div>
+          <h3>Travlr Getaways — Backend Architecture</h3>
+        </div>
+        <span class="version-pill">v3.0 → v3.1</span>
+      </div>
+      <div class="artifact-body">
+        <p>The original backend mixed route handling, business logic, and database queries inside the same controller functions, with no validation layer protecting against malformed or malicious input.</p>
+        <ul class="artifact-list">
+          <li>Separated routes, controllers, and services into distinct layers</li>
+          <li>Added request validation and sanitization middleware</li>
+          <li>Closed a NoSQL injection vulnerability in the original query handling</li>
+          <li>Documented architectural decisions in code comments and README</li>
+        </ul>
+        <div class="artifact-links">
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/tree/v3.0-original" class="link-chip">v3.0 original ↗</a>
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/tree/v3.1-enhanced" class="link-chip featured">v3.1 enhanced ↗</a>
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/compare/v3.0-original...v3.1-enhanced" class="link-chip">Diff ↗</a>
+          <a href="narratives/CS499%20Mod3%20Enhancement%20Narrative%20-%20Software%20Design.docx" class="link-chip">Narrative ↗</a>
+        </div>
+        <div class="outcomes-row">
+          <span class="outcome-tag">CO2 · Communication</span>
+          <span class="outcome-tag">CO4 · Techniques &amp; Tools</span>
+          <span class="outcome-tag">CO5 · Security Mindset</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="algorithms" class="wrap-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">03</div>
+      <h2>Algorithms &amp; Data Structures</h2>
+      <p class="section-intro">Replacing a linear scan with a Trie and an LRU cache, built from scratch rather than pulled from a library.</p>
+    </div>
+
+    <div class="artifact">
+      <div class="artifact-head">
+        <div>
+          <div class="artifact-cat">Enhancement Two</div>
+          <h3>Travlr Getaways — Search &amp; Caching</h3>
+        </div>
+        <span class="version-pill">v3.1 → v4.0</span>
+      </div>
+      <div class="artifact-body">
+        <p>The original search scanned every trip in the database on every query, with no caching for repeated lookups and no support for prefix-style autocomplete.</p>
+        <ul class="artifact-list">
+          <li>Built a Trie from scratch for prefix-based autocomplete search</li>
+          <li>Implemented an LRU cache with a hash map and doubly linked list</li>
+          <li>Dropped both directly into the existing service layer with no controller changes</li>
+          <li>Measured and documented the trade-offs between memory use and lookup speed</li>
+        </ul>
+        <div class="artifact-links">
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/tree/v3.1-enhanced" class="link-chip">Before (v3.1) ↗</a>
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/tree/v4.0-enhanced" class="link-chip featured">v4.0 enhanced ↗</a>
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/compare/v3.1-enhanced...v4.0-enhanced" class="link-chip">Diff ↗</a>
+          <a href="narratives/CS499%20Mod%204%20Enhancement%20Narrative%20-%20Algorithms.docx" class="link-chip">Narrative ↗</a>
+        </div>
+        <div class="outcomes-row">
+          <span class="outcome-tag">CO3 · Algorithmic Design</span>
+          <span class="outcome-tag">CO4 · Techniques &amp; Tools</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="databases" class="wrap-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">04</div>
+      <h2>Databases</h2>
+      <p class="section-intro">Replacing loosely typed schemas with validated models, real relationships, and aggregation pipelines.</p>
+    </div>
+
+    <div class="artifact">
+      <div class="artifact-head">
+        <div>
+          <div class="artifact-cat">Enhancement Three</div>
+          <h3>Travlr Getaways — Schema &amp; Data Layer</h3>
+        </div>
+        <span class="version-pill">v4.0 → v5.0</span>
+      </div>
+      <div class="artifact-body">
+        <p>The original MongoDB collections had minimal schema validation and no modeled relationships between trips, bookings, and reviews — ratings would have required pulling every review into application code to average manually.</p>
+        <ul class="artifact-list">
+          <li>Added full Mongoose schema validation across all collections</li>
+          <li>Modeled real relationships with new Booking and Review collections</li>
+          <li>Built aggregation pipelines to calculate ratings inside the database</li>
+          <li>Parameterized all queries as a second layer of injection defense</li>
+        </ul>
+        <div class="artifact-links">
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/tree/v4.0-enhanced" class="link-chip">Before (v4.0) ↗</a>
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/tree/v5.0-enhanced" class="link-chip featured">v5.0 enhanced ↗</a>
+          <a href="https://github.com/Ahuert20/Full-Stack-App-1/compare/v4.0-enhanced...v5.0-enhanced" class="link-chip">Diff ↗</a>
+          <a href="narratives/CS499%20Mod%205%20Enhancement%20Narrative%20-%20Database.docx" class="link-chip">Narrative ↗</a>
+        </div>
+        <div class="outcomes-row">
+          <span class="outcome-tag">CO3 · Design Trade-offs</span>
+          <span class="outcome-tag">CO4 · Advanced MongoDB</span>
+          <span class="outcome-tag">CO5 · Security Mindset</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Built and maintained on GitHub Pages · <a href="https://github.com/Ahuert20/Full-Stack-App-1" target="_blank" rel="noopener">github.com/Ahuert20/Full-Stack-App-1</a></p>
+    <p>CS 499 — Computer Science Capstone, Southern New Hampshire University</p>
+  </div>
+</footer>
+
 </body>
 </html>
