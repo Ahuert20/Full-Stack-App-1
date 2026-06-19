@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Austin Huertas — CS 499 ePortfolio</title>
+<title>Austin Huertas, CS 499 ePortfolio</title>
 <style>
   :root{
     --bg:#0d1117;
@@ -207,7 +207,7 @@
   <div class="wrap" style="max-width:1040px;">
     <div class="eyebrow">CS 499 Computer Science Capstone</div>
     <h1>Austin Huertas</h1>
-    <p class="hero-sub">A backend-focused ePortfolio built around one application, rebuilt three times — through software design, algorithms, and database engineering.</p>
+    <p class="hero-sub">A backend-focused ePortfolio built around one application, rebuilt three times through software design, algorithms, and database engineering.</p>
     <div class="hero-links">
       <a href="https://github.com/Ahuert20/Full-Stack-App-1" class="btn btn-primary">View Repository ↗</a>
       <a href="#assessment" class="btn btn-ghost">Read Self-Assessment</a>
@@ -218,7 +218,7 @@
 
 <div class="timeline-section">
   <div class="wrap" style="max-width:1040px;">
-    <div class="timeline-label">// one artifact, three enhancements — travlr getaways</div>
+    <div class="timeline-label">// one artifact, three enhancements, travlr getaways</div>
     <div class="timeline">
       <div class="tl-node">
         <span class="tl-tag">v3.0</span>
@@ -228,7 +228,7 @@
       <div class="tl-node">
         <span class="tl-tag">v3.1</span>
         <span class="tl-cat">Software Design</span>
-        <p class="tl-desc">Layered architecture — routes, controllers, services, validation separated and security-hardened.</p>
+        <p class="tl-desc">Layered architecture: routes, controllers, services, validation separated and security-hardened.</p>
       </div>
       <div class="tl-node">
         <span class="tl-tag">v4.0</span>
@@ -249,24 +249,24 @@
     <div class="section-head">
       <div class="section-num">00</div>
       <h2>Professional Self-Assessment</h2>
-      <p class="section-intro">How the program — and a prior career in financial services — shaped the way I build and explain software.</p>
+      <p class="section-intro">How the program, and a prior career in financial services, shaped the way I build and explain software.</p>
     </div>
 
     <div class="assessment">
-      <p>Before starting the Computer Science program at SNHU, I worked in financial services, mainly in banking and 401(k) administration. That background shaped a skill I rely on constantly as a developer: translating technical information into something a non-technical person can act on. I regularly explained financial products to clients with no finance background and turned vague requests into concrete next steps. That same instinct now shows up in how I write documentation, design API responses, and explain security decisions — making something technical understandable for whoever is on the other end.</p>
+      <p>Before starting the Computer Science program at SNHU, I worked in financial services, mainly in banking and 401(k) administration. That background shaped a skill I rely on constantly as a developer: translating technical information into something a non-technical person can act on. I regularly explained financial products to clients with no finance background and turned vague requests into concrete next steps. That same instinct now shows up in how I write documentation, design API responses, and explain security decisions, making something technical understandable for whoever is on the other end.</p>
 
-      <p>My coursework was built around code reviews, peer feedback, and discussion-based learning rather than assigned team roles. That model still demanded the core skill of collaborative development: writing code clearly enough that someone else — a peer, an instructor, or a future employer — can follow my reasoning without me explaining it in person. My capstone reflects this directly: every enhancement below includes documentation, README context, and a narrative justifying <em>why</em> I made each choice, not just what changed.</p>
+      <p>My coursework was built around code reviews, peer feedback, and discussion-based learning rather than assigned team roles. That model still demanded the core skill of collaborative development: writing code clearly enough that someone else, a peer, an instructor, or a future employer, can follow my reasoning without me explaining it in person. My capstone reflects this directly: every enhancement below includes documentation, README context, and a narrative justifying <em>why</em> I made each choice, not just what changed.</p>
 
       <button class="assessment-toggle" onclick="document.getElementById('assessment-rest').classList.toggle('open'); this.textContent = this.textContent.includes('Read') ? 'Show less ↑' : 'Read full self-assessment ↓';">Read full self-assessment ↓</button>
 
       <div class="assessment-full" id="assessment-rest">
-        <p>My strongest <strong>data structures and algorithms</strong> work comes from enhancing Travlr Getaways, a travel booking app I originally built in CS 465. The original search relied on a linear scan through every trip for every query. For my enhancement, I built a Trie from scratch for prefix-based autocomplete, paired with an LRU cache using a hash map and doubly linked list to avoid repeated database hits. Building both without a library forced me to actually understand the trade-offs — memory versus speed, cache size versus hit rate — instead of just knowing the vocabulary.</p>
+        <p>My strongest <strong>data structures and algorithms</strong> work comes from enhancing Travlr Getaways, a travel booking app I originally built in CS 465. The original search relied on a linear scan through every trip for every query. For my enhancement, I built a Trie from scratch for prefix-based autocomplete, paired with an LRU cache using a hash map and doubly linked list to avoid repeated database hits. Building both without a library forced me to actually understand the trade-offs: memory versus speed, cache size versus hit rate, instead of just knowing the vocabulary.</p>
 
-        <p>My approach to <strong>software engineering and databases</strong> is best shown by how Travlr evolved across all three capstone enhancements, since each one built on the last. The software design enhancement restructured the app into proper layers — routes, controllers, services, validation — instead of mixing business logic with request handling. That restructuring is what made the algorithms enhancement possible without rewriting the app, since the new search logic dropped cleanly into the service layer. The database enhancement went further, replacing loosely typed schemas with validated Mongoose models, adding real relationships through Booking and Review collections, and using aggregation pipelines to calculate ratings instead of pulling every review into application code.</p>
+        <p>My approach to <strong>software engineering and databases</strong> is best shown by how Travlr evolved across all three capstone enhancements, since each one built on the last. The software design enhancement restructured the app into proper layers: routes, controllers, services, validation, instead of mixing business logic with request handling. That restructuring is what made the algorithms enhancement possible without rewriting the app, since the new search logic dropped cleanly into the service layer. The database enhancement went further, replacing loosely typed schemas with validated Mongoose models, adding real relationships through Booking and Review collections, and using aggregation pipelines to calculate ratings instead of pulling every review into application code.</p>
 
-        <p><strong>Security</strong> ran through all three enhancements rather than existing as a separate step. The original Travlr code passed user input straight into database queries — a textbook NoSQL injection risk. I addressed it with layered defenses: input validation and sanitization at the middleware level, schema-level validation as backup, and parameterized queries throughout. Coming from financial services, where a data error has real consequences, assuming input is hostile until proven otherwise was already familiar — CS 499 gave me the tools to actually implement it.</p>
+        <p><strong>Security</strong> ran through all three enhancements rather than existing as a separate step. The original Travlr code passed user input straight into database queries, a textbook NoSQL injection risk. I addressed it with layered defenses: input validation and sanitization at the middleware level, schema-level validation as backup, and parameterized queries throughout. Coming from financial services, where a data error has real consequences, assuming input is hostile until proven otherwise was already familiar. CS 499 gave me the tools to actually implement it.</p>
 
-        <p>Together, these three artifacts tell one continuous story. Travlr started as functional but architecturally weak, and across software design, algorithms, and database work, it became something closer to what I'd actually ship. I'm presenting the original and enhanced versions side by side because the contrast is the point — this portfolio shows I can look at existing code critically and fix what's actually wrong with it. That's the core of backend development: not just building from scratch, but improving systems that already exist.</p>
+        <p>Together, these three artifacts tell one continuous story. Travlr started as functional but architecturally weak, and across software design, algorithms, and database work, it became something closer to what I'd actually ship. I'm presenting the original and enhanced versions side by side because the contrast is the point: this portfolio shows I can look at existing code critically and fix what's actually wrong with it. That's the core of backend development, not just building from scratch, but improving systems that already exist.</p>
       </div>
     </div>
   </div>
@@ -277,7 +277,7 @@
     <div class="section-head">
       <div class="section-num">01</div>
       <h2>Code Review</h2>
-      <p class="section-intro">Initial walkthrough of Travlr Getaways before any enhancements — existing functionality, code analysis, and the enhancement plan across all three categories.</p>
+      <p class="section-intro">Initial walkthrough of Travlr Getaways before any enhancements: existing functionality, code analysis, and the enhancement plan across all three categories.</p>
     </div>
 
     <div class="video-card">
@@ -285,7 +285,7 @@
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </div>
       <div class="video-meta">
-        <h3>Travlr Getaways — Code Review</h3>
+        <h3>Travlr Getaways: Code Review</h3>
         <p>~25 min · screencast walkthrough</p>
       </div>
       <a href="https://vimeo.com/1202947117?share=copy&fl=sv&fe=ci" class="btn btn-primary" target="_blank" rel="noopener">Watch on Vimeo ↗</a>
@@ -305,7 +305,7 @@
       <div class="artifact-head">
         <div>
           <div class="artifact-cat">Enhancement One</div>
-          <h3>Travlr Getaways — Backend Architecture</h3>
+          <h3>Travlr Getaways: Backend Architecture</h3>
         </div>
         <span class="version-pill">v3.0 → v3.1</span>
       </div>
@@ -345,7 +345,7 @@
       <div class="artifact-head">
         <div>
           <div class="artifact-cat">Enhancement Two</div>
-          <h3>Travlr Getaways — Search &amp; Caching</h3>
+          <h3>Travlr Getaways: Search &amp; Caching</h3>
         </div>
         <span class="version-pill">v3.1 → v4.0</span>
       </div>
@@ -384,12 +384,12 @@
       <div class="artifact-head">
         <div>
           <div class="artifact-cat">Enhancement Three</div>
-          <h3>Travlr Getaways — Schema &amp; Data Layer</h3>
+          <h3>Travlr Getaways: Schema &amp; Data Layer</h3>
         </div>
         <span class="version-pill">v4.0 → v5.0</span>
       </div>
       <div class="artifact-body">
-        <p>The original MongoDB collections had minimal schema validation and no modeled relationships between trips, bookings, and reviews — ratings would have required pulling every review into application code to average manually.</p>
+        <p>The original MongoDB collections had minimal schema validation and no modeled relationships between trips, bookings, and reviews. Ratings would have required pulling every review into application code to average manually.</p>
         <ul class="artifact-list">
           <li>Added full Mongoose schema validation across all collections</li>
           <li>Modeled real relationships with new Booking and Review collections</li>
@@ -415,7 +415,7 @@
 <footer>
   <div class="wrap">
     <p>Built and maintained on GitHub Pages · <a href="https://github.com/Ahuert20/Full-Stack-App-1" target="_blank" rel="noopener">github.com/Ahuert20/Full-Stack-App-1</a></p>
-    <p>CS 499 — Computer Science Capstone, Southern New Hampshire University</p>
+    <p>CS 499, Computer Science Capstone, Southern New Hampshire University</p>
   </div>
 </footer>
 
